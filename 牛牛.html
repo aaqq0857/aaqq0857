@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>城市邊緣：塗鴉的主流化之路</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-pink: #ff007f;
+            --neon-blue: #00f2ff;
+            --neon-yellow: #fefe33;
+            --street-black: #1a1a1a;
+        }
+
+        body {
+            background-color: var(--street-black);
+            color: white;
+            font-family: 'Noto Sans TC', sans-serif;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(26, 26, 26, 0.95), rgba(26, 26, 26, 0.95)),
+                url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+        }
+
+        .graffiti-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 3px 3px 0px var(--neon-pink), 6px 6px 0px var(--neon-blue);
+            transform: rotate(-2deg);
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .card {
+            background: rgba(30, 30, 30, 0.9);
+            border: 4px solid #333;
+            border-radius: 0;
+            box-shadow: 10px 10px 0px #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .character-img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-bottom: 4px solid var(--neon-pink);
+            filter: grayscale(30%) contrast(120%);
+        }
+
+        .btn-choice {
+            background: transparent;
+            border: 2px solid white;
+            padding: 1rem;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .btn-choice:hover {
+            background: white;
+            color: black;
+            transform: translateX(10px);
+            box-shadow: -5px 0px 0px var(--neon-pink);
+        }
+
+        .spray-effect {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, var(--neon-pink) 0%, transparent 70%);
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .tag-box {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--neon-yellow);
+            color: black;
+            font-size: 0.9rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            flex-direction: column;
+        }
+
+        .loader-bar {
+            width: 200px;
+            height: 4px;
+            background: #222;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loader-fill {
+            position: absolute;
+            height: 100%;
+            background: var(--neon-pink);
+            width: 0%;
+            animation: load 2s infinite ease-in-out;
+        }
+
+        @keyframes load {
+            0% { width: 0%; left: 0; }
+            50% { width: 100%; left: 0; }
+            100% { width: 0%; left: 100%; }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Loading screen for image generation -->
+    <div id="loading" class="loading-overlay">
+        <div class="text-2xl font-black italic flicker">PREPARING SPRAY CANS...</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+    </div>
+
+    <div id="app" class="max-w-2xl mx-auto hidden">
+        <!-- Start Screen -->
+        <div id="start-screen" class="text-center py-10">
+            <h1 class="graffiti-title">城市邊緣</h1>
+            
+            <div class="card mb-8 overflow-hidden">
+                <img id="hero-image" src="" alt="主角阿強" class="character-img">
+                <div class="p-6 text-left">
+                    <h2 class="text-2xl font-black text-blue-400 mb-2">主角：阿強 (Kyo)</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        24歲，白天在印刷廠打工，晚上是游移在台北街頭的塗鴉客。對他來說，牆面是唯一的畫布。隨著市府推動街頭藝術合法化，他面臨了創作者最大的難題：<span class="text-white font-bold">是要在體制內活得像個藝術家，還是在陰影中當一輩子的破壞者？</span>
+                    </p>
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="bg-white text-black font-black px-10 py-4 text-2xl hover:bg-pink-500 hover:text-white transition-colors w-full">
+                開始阿強的故事 [START]
+            </button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="hidden">
+            <div class="mb-4 flex justify-between items-center font-black">
+                <div id="scene-tag" class="tag-box">SCENE 01</div>
+                <div id="stat-mainstream" class="text-pink-500">主流度: 0%</div>
+            </div>
+            
+            <div class="card p-6 md:p-8">
+                <div id="scene-text" class="text-xl md:text-2xl font-bold mb-8 leading-relaxed">
+                    <!-- Text injected here -->
+                </div>
+                
+                <div id="choices-container">
+                    <!-- Choices injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden text-center py-10">
+            <h2 class="text-4xl font-black mb-6 text-pink-500">結局：阿強的歸宿</h2>
+            <div id="result-text" class="text-xl mb-10 leading-relaxed bg-gray-900 p-8 border-l-4 border-pink-500 text-left">
+                <!-- Result text here -->
+            </div>
+            <button onclick="location.reload()" class="border-2 border-white px-8 py-3 hover:bg-white hover:text-black transition-all">
+                重新挑戰 [RESET]
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = ""; // Runtime provides this
+
+        async function generateHeroImage() {
+            const prompt = "A young Asian graffiti artist named Kyo, wearing a black hoodie with paint splatters, holding a spray can, standing in front of a colorful neon graffiti wall at night, gritty urban style, cinematic lighting, high contrast, street art aesthetic.";
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        instances: [{ prompt: prompt }],
+                        parameters: { sampleCount: 1 }
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.predictions && result.predictions[0]) {
+                    const imageUrl = `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                    document.getElementById('hero-image').src = imageUrl;
+                } else {
+                    // Fallback if image generation fails
+                    document.getElementById('hero-image').src = "https://images.unsplash.com/photo-1534073828943-f801091bb18c?q=80&w=1000&auto=format&fit=crop";
+                }
+            } catch (error) {
+                console.error("Image generation failed", error);
+                document.getElementById('hero-image').src = "https://images.unsplash.com/photo-1534073828943-f801091bb18c?q=80&w=1000&auto=format&fit=crop";
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('app').classList.remove('hidden');
+            }
+        }
+
+        const story = [
+            {
+                id: 1,
+                tag: "法律與自由",
+                text: "市府推行「合法塗鴉區」，邀請你去那裡創作。阿強的前輩『老鷹』冷笑說：『阿強，如果你去了，你就只是政府的廉價粉刷工。』你該怎麼選？",
+                choices: [
+                    {
+                        text: "「老鷹，我想被看見。」選擇合法區，在那裡安靜創作。",
+                        next: 2,
+                        mainstreamScore: 25,
+                        feedback: "你在陽光下創作，路人為你鼓掌。但老鷹再也沒和你說過話。"
+                    },
+                    {
+                        text: "「這不是我的地盤。」拒絕合法化，回到深夜的危險圍牆。",
+                        next: 2,
+                        mainstreamScore: 0,
+                        feedback: "警察的警笛聲是你最熟悉的音樂。你的作品被洗掉，但你的心是自由的。"
+                    }
+                ]
+            },
+            {
+                id: 2,
+                tag: "審美衝突",
+                text: "一家高級文青咖啡館找上阿強，希望在門口塗鴉。經理要求：『Kyo，能不能把那些噴漆流下來的滴痕擦掉？看起來太髒了。』",
+                choices: [
+                    {
+                        text: "「沒問題，生意嘛。」修改成乾淨、甜美的插畫風格。",
+                        next: 3,
+                        mainstreamScore: 25,
+                        feedback: "網美們紛紛來拍照，你賺到了第一筆豐厚的酬勞。但你覺得自己像個美工。"
+                    },
+                    {
+                        text: "「滴痕就是靈魂。」堅持暴力且原始的筆觸，不改就是不改。",
+                        next: 3,
+                        mainstreamScore: 0,
+                        feedback: "談判破裂。你在咖啡館門口的柏油路上噴了個大大的嘲諷圖案。"
+                    }
+                ]
+            },
+            {
+                id: 3,
+                tag: "商業陷阱",
+                text: "主流雜誌想採訪你，但他們只想把你塑造成『從良的街頭頑童』。他們問：『你現在是不是覺得以前的行為很幼稚？』",
+                choices: [
+                    {
+                        text: "「是的，那只是成長的過程。」為了進入主流視野，順著對方的話說。",
+                        next: 4,
+                        mainstreamScore: 25,
+                        feedback: "你登上了封面。年輕孩子覺得你很酷，但當年的戰友覺得你背叛了過去。"
+                    },
+                    {
+                        text: "「那是我最自豪的時候。」堅稱非法塗鴉才是最純正的藝術。",
+                        next: 4,
+                        mainstreamScore: -10,
+                        feedback: "報導被取消了。你在藝廊圈的名聲受損，但在街頭你依然是傳奇。"
+                    }
+                ]
+            },
+            {
+                id: 4,
+                tag: "終極抉擇",
+                text: "一家運動大廠邀請阿強擔任亞洲區創意顧問。這意味著不用再為錢煩惱，但阿強的名字將永遠與『資本標籤』綁在一起。",
+                choices: [
+                    {
+                        text: "「我要改變規則。」接受合約，從內部推廣塗鴉文化。",
+                        next: 'end',
+                        mainstreamScore: 25,
+                        feedback: "阿強穿上了西裝，坐在冷氣辦公室裡畫著噴漆效果的球鞋圖稿。"
+                    },
+                    {
+                        text: "「我不屬於辦公室。」燒掉合約，把所有的噴漆罐裝進後背包。",
+                        next: 'end',
+                        mainstreamScore: 0,
+                        feedback: "阿強消失在獵頭公司的名單中，台北的小巷弄裡出現了新的傑作。"
+                    }
+                ]
+            }
+        ];
+
+        let currentScene = 0;
+        let totalScore = 0;
+
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            renderScene();
+        }
+
+        function renderScene() {
+            const scene = story[currentScene];
+            document.getElementById('scene-tag').innerText = `SCENE ${String(currentScene + 1).padStart(2, '0')} - ${scene.tag}`;
+            document.getElementById('scene-text').innerText = scene.text;
+            
+            const container = document.getElementById('choices-container');
+            container.innerHTML = '';
+            
+            scene.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-choice';
+                btn.innerText = choice.text;
+                btn.onclick = () => makeChoice(choice);
+                container.appendChild(btn);
+            });
+
+            document.getElementById('stat-mainstream').innerText = `主流度: ${totalScore}%`;
+        }
+
+        function makeChoice(choice) {
+            totalScore += choice.mainstreamScore;
+            const sceneText = document.getElementById('scene-text');
+            sceneText.style.color = '#ff007f';
+            sceneText.innerText = choice.feedback;
+            
+            setTimeout(() => {
+                sceneText.style.color = 'white';
+                if (choice.next === 'end') {
+                    showResult();
+                } else {
+                    currentScene++;
+                    renderScene();
+                }
+            }, 1800);
+        }
+
+        function showResult() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            
+            let resultMsg = "";
+            if (totalScore >= 90) {
+                resultMsg = "【結局：藝廊的精緻囚徒】阿強變成了 Kyo 老師，他的作品出現在美術館。但他漸漸發現，在冷氣房裡噴漆，再也聞不到那種自由的刺鼻味。他贏得了全世界的讚賞，卻弄丟了自己。";
+            } else if (totalScore >= 40) {
+                resultMsg = "【結局：遊走邊緣的倖存者】阿強在商業與街頭之間找到了平衡。他幫咖啡館畫牆面換取噴漆錢，晚上再去非法牆面發洩。他很疲憊，但也活得最像個現代塗鴉人——在夾縫中求生存。";
+            } else {
+                resultMsg = "【結局：不屈的街頭幽靈】阿強徹底拒絕了主流。他數次進出警局，過著清貧的生活。但在台北的深夜，只要看到那一抹鮮豔的噴漆痕跡，每個人都知道：阿強還在那裡，他從未妥協。";
+            }
+            
+            document.getElementById('result-text').innerText = resultMsg;
+        }
+
+        // Mouse Spray Effect
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() > 0.95) {
+                const spray = document.createElement('div');
+                spray.className = 'spray-effect';
+                spray.style.left = (e.pageX - 60) + 'px';
+                spray.style.top = (e.pageY - 60) + 'px';
+                const colors = ['#ff007f', '#00f2ff', '#fefe33'];
+                spray.style.background = `radial-gradient(circle, ${colors[Math.floor(Math.random()*colors.length)]} 0%, transparent 70%)`;
+                document.body.appendChild(spray);
+                setTimeout(() => spray.remove(), 600);
+            }
+        });
+
+        // Initialize
+        window.onload = generateHeroImage;
+    </script>
+</body>
+</html>
